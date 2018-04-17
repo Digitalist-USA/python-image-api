@@ -1,0 +1,11 @@
+tqdm
+tensorflow
+flask
+flask-restplus
+requests
+jsonpickle
+opencv-python
+Pillow
+redis
+pylint
+pytest
