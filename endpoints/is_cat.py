@@ -13,6 +13,12 @@ LOGGER = logging.getLogger(__name__)
 
 @APP.route("/is_cat", methods=["GET", "POST"])
 def is_cat():
+    """
+    Main API endpoint
+
+    Args:
+    Returns:
+    """
     if request.method == "GET":
         LOGGER.info("Received a GET request")
         return jsonify({"status": 200, "message": "OK"})
