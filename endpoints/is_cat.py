@@ -6,6 +6,7 @@ import logging
 from flask import jsonify, request
 
 from start import APP
+from service.cat_service import CAT_SERVICE
 
 
 LOGGER = logging.getLogger(__name__)
@@ -16,12 +17,21 @@ def is_cat():
     """
     Main API endpoint
 
-    Args:
+    Request must contain the following query parameter:
+
+        image_url: valid url to image
+
     Returns:
     """
     if request.method == "GET":
-        LOGGER.info("Received a GET request")
-        return jsonify({"status": 200, "message": "OK"})
+        try:
+            url = request.args["image_url"]
+        except KeyError:
+            msg = "Missing required query parameter: image_url"
+            LOGGER.warning(msg)
+            return jsonify({"status": 400, "message": msg}), 400
+        result = CAT_SERVICE.is_cat(url)  # FIXME first check url?
+        return jsonify({"status": 200, "message": result})
     LOGGER.warning("Request method %s unimplemented", request.method)
     return jsonify({"status": 405, "message": "Unimplemented method"}), 405
 
