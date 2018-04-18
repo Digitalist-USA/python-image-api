@@ -3,15 +3,14 @@ Main app is started here
 """
 import logging
 
-LOGGER = logging.getLogger(__name__)
+from flask import Flask
 
+APP = Flask(__name__)
 
-def main():
-    """
-    Invoke api here
-    """
-    pass
+# FIXME circular import
+# pylint: disable=unused-import
+# pylint: disable=wrong-import-position
+import endpoints.is_cat
 
-
-if __name__ == '__main__':
-    main()
+# TODO logging configuration
+logging.basicConfig(level="INFO")
