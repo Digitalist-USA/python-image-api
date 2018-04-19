@@ -17,23 +17,27 @@ def is_cat():
     """
     Main API endpoint
 
-    Request must contain the following query parameter:
+    Following query parameter are defined:
 
-        image_url: valid url to image
+        image_url: (required) valid url to image
+        nocache: (optional) if provided, do not check cache for is_cat results
 
     Returns:
     """
+    try:
+        image_url = request.args["image_url"]
+    except KeyError:
+        msg = "Missing required query parameter: image_url"
+        LOGGER.warning(msg)
+        return jsonify({"status": 400, "message": msg}), 400
+    # GET
     if request.method == "GET":
-        try:
-            url = request.args["image_url"]
-        except KeyError:
-            msg = "Missing required query parameter: image_url"
-            LOGGER.warning(msg)
-            return jsonify({"status": 400, "message": msg}), 400
-        result = CAT_SERVICE.is_cat(url)  # FIXME first check url?
+        use_cache = True if request.args.get("nocache") is None else False
+        result = CAT_SERVICE.is_cat(image_url, use_cache)  # FIXME first check url?
         return jsonify({"status": 200, "message": result})
-    LOGGER.warning("Request method %s unimplemented", request.method)
-    return jsonify({"status": 405, "message": "Unimplemented method"}), 405
+    # POST
+    CAT_SERVICE.save_cat(image_url)
+    return jsonify({"status": 200, "message": "OK"})  # for now
 
 
 @APP.errorhandler(404)
@@ -46,6 +50,18 @@ def not_found(error):
     """
     LOGGER.warning(error)
     return jsonify({"status": 404, "message": "Not found"}), 404
+
+
+@APP.errorhandler(405)
+def not_allowed(error):
+    """
+    Custom error handling (405)
+
+    Args:
+    Returns:
+    """
+    LOGGER.warning(error)
+    return jsonify({"status": 405, "message": "Method not allowed"}), 405
 
 
 @APP.errorhandler(500)
