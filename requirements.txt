@@ -9,3 +9,4 @@ Pillow
 redis
 pylint
 pytest
+Flask-SQLAlchemy
