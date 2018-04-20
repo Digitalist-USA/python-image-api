@@ -11,7 +11,7 @@ def find_cat_result(image_url):
     Fetch a cached is_cat calculation result from database
 
     Args:
-        image_url: url that identifies the cat image
+        image_url: url that identifies the image
 
     Returns:
         bool: whether image contains a cat
@@ -28,10 +28,10 @@ def find_cat_result(image_url):
 
 def save_cat_result(image_url, is_cat):
     """
-    Save a is_cat calculation result in database
+    Save an is_cat calculation result in database
 
     Args:
-        image_url: url that identifies the cat image
+        image_url: url that identifies the image
         is_cat: result of calculation (whether image contains a cat)
 
     Returns:
@@ -42,5 +42,27 @@ def save_cat_result(image_url, is_cat):
     conn = ENGINE.connect()
     try:
         conn.execute(ins)
+    finally:
+        conn.close()
+
+
+def update_cat_result(image_url, is_cat):
+    """
+    Update an is_cat calculation result in database
+
+    Args:
+        image_url: url that identifies the image
+        is_cat: result of calculation (whether image contains a cat)
+
+    Returns:
+
+    """
+    # pylint: disable=no-value-for-parameter
+    upd = CAT_RESULTS.update().\
+        where(CAT_RESULTS.c.image_url == image_url).\
+        values(is_cat=is_cat)
+    conn = ENGINE.connect()
+    try:
+        conn.execute(upd)
     finally:
         conn.close()

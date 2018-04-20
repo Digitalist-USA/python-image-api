@@ -5,7 +5,7 @@ import logging
 
 from ml.cats import CatImageRec
 
-from .cat_repository import find_cat_result, save_cat_result
+from .cat_repository import find_cat_result, save_cat_result, update_cat_result
 
 
 LOGGER = logging.getLogger(__name__)
@@ -56,7 +56,17 @@ class CatService:
 
         """
         result = self.cat_image_rec.is_cat(image_url)
-        save_cat_result(image_url, result)
+        # check if results have been previously cached; update if necessary
+        cached = find_cat_result(image_url)
+        if cached is None:
+            LOGGER.info("Saving new results for %s", image_url)
+            save_cat_result(image_url, result)
+        else:
+            if cached != result:
+                LOGGER.info("Updating previously stored results for %s", image_url)
+                update_cat_result(image_url, result)
+            else:
+                LOGGER.info("No change to results for %s", image_url)
 
 
 CAT_SERVICE = CatService()
