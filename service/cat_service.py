@@ -5,7 +5,7 @@ import logging
 
 from ml.cats import CatImageRec
 
-from .cat_repository import find_cat_result, save_cat_result, update_cat_result
+from .cat_repository import find_cat_result, insert_cat_result, update_cat_result
 
 
 LOGGER = logging.getLogger(__name__)
@@ -32,15 +32,14 @@ class CatService:
             bool: whether image contains a cat
         """
         if use_cache:
-            LOGGER.info("Checking cache for %s", image_url)
+            LOGGER.info(f"Checking cache for {image_url}")
             result = find_cat_result(image_url)
             if result is not None:
-                LOGGER.info(
-                    "Found result in cache: %s %s a cat", image_url, "is" if result else "is not"
-                )
-                return result
+                _is_cat = "is" if result.is_cat else "is not"
+                LOGGER.info(f"Found result in cache: {image_url} {_is_cat} a cat")
+                return result.is_cat
             else:
-                LOGGER.info("%s not found in cache", image_url)
+                LOGGER.info(f"{image_url} not found in cache")
         return self.cat_image_rec.is_cat(image_url=image_url)
 
     def save_cat(self, image_url):
@@ -59,14 +58,14 @@ class CatService:
         # check if results have been previously cached; update if necessary
         cached = find_cat_result(image_url)
         if cached is None:
-            LOGGER.info("Saving new results for %s", image_url)
-            save_cat_result(image_url, result)
+            LOGGER.info(f"Saving new results for {image_url}")
+            insert_cat_result(image_url, result)
         else:
-            if cached != result:
-                LOGGER.info("Updating previously stored results for %s", image_url)
+            if cached.is_cat != result:
+                LOGGER.info(f"Updating previously stored results for {image_url}")
                 update_cat_result(image_url, result)
             else:
-                LOGGER.info("No change to results for %s", image_url)
+                LOGGER.info(f"No change to results for {image_url}")
 
 
 CAT_SERVICE = CatService()
