@@ -5,6 +5,7 @@ import logging
 
 from flask import jsonify, request
 
+from common.util import is_downloadable
 from service.cat_service import CAT_SERVICE
 from start import APP
 from tasks import process_and_save
@@ -31,10 +32,14 @@ def is_cat():
         msg = "Missing required query parameter: image_url"
         LOGGER.warning(msg)
         return jsonify({"status": 400, "message": msg}), 400
+    if not is_downloadable(image_url):
+        msg = "Bad parameter: image_url is not downloadable"
+        LOGGER.warning(msg)
+        return jsonify({"status": 400, "message": msg}), 400
     # GET
     if request.method == "GET":
         use_cache = True if request.args.get("nocache") is None else False
-        result = CAT_SERVICE.is_cat(image_url, use_cache)  # FIXME first check url?
+        result = CAT_SERVICE.is_cat(image_url, use_cache)
         return jsonify({"status": 200, "message": result})
     # POST
     process_and_save.delay(image_url)
