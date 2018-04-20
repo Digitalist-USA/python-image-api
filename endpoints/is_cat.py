@@ -5,8 +5,9 @@ import logging
 
 from flask import jsonify, request
 
-from start import APP
 from service.cat_service import CAT_SERVICE
+from start import APP
+from tasks import process_and_save
 
 
 LOGGER = logging.getLogger(__name__)
@@ -36,8 +37,8 @@ def is_cat():
         result = CAT_SERVICE.is_cat(image_url, use_cache)  # FIXME first check url?
         return jsonify({"status": 200, "message": result})
     # POST
-    CAT_SERVICE.save_cat(image_url)
-    return jsonify({"status": 200, "message": "OK"})  # for now
+    process_and_save.delay(image_url)
+    return jsonify({"status": 202, "message": "Accepted"})
 
 
 @APP.errorhandler(404)
