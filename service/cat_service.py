@@ -46,8 +46,6 @@ class CatService:
         """
         Predicts whether image contains a cat and saves result in database
 
-        TODO: use task queue to compute result later
-
         Args:
             image_url: valid url to image
 
