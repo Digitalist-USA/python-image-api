@@ -3,7 +3,7 @@ A module for handling database ops
 """
 from sqlalchemy.sql import select
 
-from start import ENGINE, CAT_RESULTS
+from database import ENGINE, CAT_RESULTS
 
 
 def find_cat_result(image_url):
