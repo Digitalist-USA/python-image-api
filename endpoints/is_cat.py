@@ -44,7 +44,7 @@ def is_cat():
         return jsonify({"status": 200, "result": result, "message": msg})
     # POST
     process_and_save.delay(image_url)
-    return jsonify({"status": 202, "result": None, "message": "Accepted"})
+    return jsonify({"status": 202, "result": None, "message": "Accepted"}), 202
 
 
 @APP.errorhandler(404)
